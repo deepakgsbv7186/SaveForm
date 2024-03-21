@@ -1,0 +1,13 @@
+node_modules/
+.env
+.DS_Store
+.vscode/
+.idea/
+.npmrc
+*.log
+coverage/
+/dist
+/build
+.log/
+.history/
+yarn-error.log

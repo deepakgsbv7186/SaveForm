@@ -1,4 +1,6 @@
+import axios from "axios";
 import React, { useState } from "react";
+import toast from "react-hot-toast";
 import { CgProfile } from "react-icons/cg";
 
 export default function LongForm() {
@@ -34,10 +36,28 @@ export default function LongForm() {
     setUserInput({ ...userInput, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(userInput);
-    // Handle form submission logic here
+    try {
+      const response = await axios.post(
+        "http://localhost:4004/user/register",
+        userInput
+      );
+      if (response?.status === 201) {
+        toast.success("Form submitted successfully.");
+        console.log(response?.data);
+        setUserInput({
+          firstName: "",
+          lastName: "",
+          profilePic: null,
+          gender: "",
+          maritalStatus: "",
+          dateOfBirth: "",
+        });
+      }
+    } catch (error) {
+      console.log("Form not submitted.", error);
+    }
   };
 
   const fullNamePreview = () => {
