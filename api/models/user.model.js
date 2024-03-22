@@ -1,33 +1,24 @@
 import mongoose from "mongoose";
+import validator from "validator";
 
 const userSchema = new mongoose.Schema(
   {
-    firstName: {
+    email: {
       type: String,
       trim: true,
-      lowercase: true,
+      required: true,
+      unique: true,
+      validate(value) {
+        if (!validator.isEmail(value)) {
+          throw new Error("Email not valid.");
+        }
+      },
+    },
+    password: {
+      type: String,
       required: true,
     },
-    lastName: {
-      type: String,
-      trim: true,
-      lowercase: true,
-    },
-    profilePicURL: {
-      type: String,
-    },
-    gender: {
-      type: String,
-      enum: ["male", "female"],
-    },
-    maritalStatus: {
-      type: String,
-      enum: ["married", "un-married"],
-    },
-    dateOfBirth: {
-      type: Date,
-      required: true,
-    },
+    tokens: String,
   },
   { timestamps: true }
 );
