@@ -6,6 +6,7 @@ export default function Input({
   placeholder,
   password = false,
   type,
+  errorMessage,
   ...rest
 }) {
   const [showPassword, setShowPassword] = useState(false);
@@ -44,6 +45,9 @@ export default function Input({
           </button>
         )}
       </div>
+      {errorMessage && (
+        <div className="text-red-500 text-xs my-1">{errorMessage}</div>
+      )}
     </div>
   );
 }
