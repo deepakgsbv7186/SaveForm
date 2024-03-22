@@ -2,6 +2,8 @@ import { Link } from "react-router-dom";
 import Input from "../../components/Input";
 import { useFormik } from "formik";
 import * as Yup from "yup";
+import axios from "axios";
+import toast from "react-hot-toast";
 
 const validationSchema = Yup.object().shape({
   email: Yup.string().email("Invalid email").required("Email is required."),
@@ -19,19 +21,44 @@ const validationSchema = Yup.object().shape({
 });
 
 export default function Register() {
-  const { values, errors, touched, handleBlur, handleChange, handleSubmit } =
-    useFormik({
-      initialValues: {
-        email: "",
-        password: "",
-        confirmpassword: "",
-      },
-      validationSchema: validationSchema,
-      onSubmit: (values) => handleFormSubmit(values),
-    });
+  const {
+    values,
+    errors,
+    touched,
+    handleBlur,
+    handleChange,
+    handleSubmit,
+    resetForm,
+  } = useFormik({
+    initialValues: {
+      email: "",
+      password: "",
+      confirmpassword: "",
+    },
+    validationSchema: validationSchema,
+    onSubmit: (values) => handleFormSubmit(values),
+  });
 
-  const handleFormSubmit = (values) => {
-    console.log("handdle", values);
+  const handleFormSubmit = async (values) => {
+    try {
+      const response = await axios({
+        method: "POST",
+        url: "http://localhost:4004/user/register",
+        data: {
+          email: values.email,
+          password: values.confirmpassword,
+        },
+      });
+
+      if (response?.status === 201) {
+        toast.success("User created successfully.");
+        console.log(response?.data);
+        resetForm();
+      }
+    } catch (error) {
+      console.log("Form not sumbmitted.", error);
+      toast.error("Form not submitted.");
+    }
   };
   return (
     <div className="flex justify-center items-center h-screen">
