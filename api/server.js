@@ -4,18 +4,19 @@ import cors from "cors";
 import { connectToDB } from "./db/connection.db.js";
 import { router } from "./routes/router.js";
 
-// configs
+// CONFIGS
 dotenv.config();
 const app = express();
 
-// middlewares
+// MIDDLEWARES
 app.use(express.json());
 app.use(cors());
 app.use(express.urlencoded({ extended: true }));
-// navigate to route
+
+// ROUTE
 app.use(router);
 
-// initiate database connection
+// initiate database connection and server
 connectToDB()
   .then(() => {
     app.listen(process.env.PORT, () => {
