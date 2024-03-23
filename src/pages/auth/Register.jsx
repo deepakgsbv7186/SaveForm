@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate, useNavigation } from "react-router-dom";
 import Input from "../../components/Input";
 import { useFormik } from "formik";
 import * as Yup from "yup";
@@ -6,10 +6,15 @@ import axios from "axios";
 import toast from "react-hot-toast";
 
 const validationSchema = Yup.object().shape({
+  name: Yup.string()
+    .trim()
+    .min(2, "Minimum two characters required.")
+    .matches(/^[a-zA-Z ]+$/, "Only alphabets are allowed.")
+    .required("Name is required."),
   email: Yup.string().email("Invalid email").required("Email is required."),
   password: Yup.string()
     .trim()
-    .min(8, "Al least 8 characters.")
+    .min(8, "At least 8 characters.")
     .matches(
       /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/,
       "Please enter valid password."
@@ -21,6 +26,7 @@ const validationSchema = Yup.object().shape({
 });
 
 export default function Register() {
+  const navigate = useNavigate();
   const {
     values,
     errors,
@@ -31,6 +37,7 @@ export default function Register() {
     resetForm,
   } = useFormik({
     initialValues: {
+      name: "",
       email: "",
       password: "",
       confirmpassword: "",
@@ -43,8 +50,9 @@ export default function Register() {
     try {
       const response = await axios({
         method: "POST",
-        url: "http://localhost:4004/user/register",
+        url: "http://localhost:4004/api/auth/register",
         data: {
+          name: values.name,
           email: values.email,
           password: values.confirmpassword,
         },
@@ -54,6 +62,7 @@ export default function Register() {
         toast.success("User created successfully.");
         console.log(response?.data);
         resetForm();
+        navigate("/login");
       }
     } catch (error) {
       console.log("Form not sumbmitted.", error);
@@ -65,9 +74,19 @@ export default function Register() {
       <div className="p-4 bg-slate-700 rounded-md shadow-md lg:w-3/12 md:w-6/12 w-[90%]">
         <form onSubmit={handleSubmit}>
           <Input
+            label={"name"}
+            placeholder={"your name is..."}
+            maxLength={50}
+            value={values.name}
+            onChange={handleChange}
+            onBlur={handleBlur}
+            errorMessage={errors.name && touched.name ? errors.name : null}
+          />
+          <Input
             label={"email"}
             placeholder={"abc@email.com"}
             type={"email"}
+            maxLength={50}
             value={values.email}
             onChange={handleChange}
             onBlur={handleBlur}
@@ -77,6 +96,7 @@ export default function Register() {
             label={"password"}
             placeholder={"your password here..."}
             type={"password"}
+            maxLength={50}
             password
             value={values.password}
             onChange={handleChange}
@@ -89,6 +109,7 @@ export default function Register() {
             label={"confirmpassword"}
             placeholder={"confirm your password..."}
             type={"password"}
+            maxLength={50}
             password
             value={values.confirmpassword}
             onChange={handleChange}

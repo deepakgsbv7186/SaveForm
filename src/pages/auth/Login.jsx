@@ -1,7 +1,9 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Input from "../../components/Input";
 import { useFormik } from "formik";
 import * as Yup from "yup";
+import axios from "axios";
+import toast from "react-hot-toast";
 
 const validationSchema = Yup.object().shape({
   email: Yup.string().email("Invalid email").required("Email is required."),
@@ -16,18 +18,44 @@ const validationSchema = Yup.object().shape({
 });
 
 export default function Login() {
-  const { values, errors, touched, handleBlur, handleChange, handleSubmit } =
-    useFormik({
-      initialValues: {
-        email: "",
-        password: "",
-      },
-      validationSchema: validationSchema,
-      onSubmit: (values) => handleFormSubmit(values),
-    });
+  const navigate = useNavigate();
+  const {
+    values,
+    errors,
+    touched,
+    handleBlur,
+    handleChange,
+    handleSubmit,
+    resetForm,
+  } = useFormik({
+    initialValues: {
+      email: "",
+      password: "",
+    },
+    validationSchema: validationSchema,
+    onSubmit: () => handleFormSubmit(),
+  });
 
-  const handleFormSubmit = (values) => {
-    console.log("handdle", values);
+  const handleFormSubmit = async () => {
+    try {
+      const response = await axios.post(
+        "http://localhost:4004/api/auth/login",
+        {
+          email: values.email,
+          password: values.password,
+        }
+      );
+
+      if (response?.status === 200) {
+        console.log("Logged in: ", response?.data);
+        toast.success("Login successful");
+        resetForm();
+        navigate("/dashboard");
+      }
+    } catch (error) {
+      toast.error("Login failed");
+      console.log("Login failed due to: ", error);
+    }
   };
   return (
     <div className="flex justify-center items-center h-screen">
