@@ -89,3 +89,26 @@ export const UserLogin = async (req, res) => {
     res.status(500).json({ success: false, message: "Login failed." });
   }
 };
+export const UserLogout = async (req, res) => {
+  try {
+    // check the userId
+    const userId = req.userId;
+    const isUserExist = await User.findById(userId);
+    if (!isUserExist) {
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found." });
+    }
+
+    isUserExist.token = null;
+    await isUserExist.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Logout successful.",
+    });
+  } catch (error) {
+    console.log("Logout failed: ", error);
+    res.status(500).json({ success: false, message: "Logout failed." });
+  }
+};

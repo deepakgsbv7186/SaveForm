@@ -46,10 +46,8 @@ export default function Login() {
         email: values.email,
         password: values.password,
       });
-      console.log(response);
       if (response?.status === 200) {
         setUserData(response?.data?.user);
-        console.log("Logged in: ", response?.data);
         toast.success("Login successful");
         resetForm();
         navigate("/dashboard");
