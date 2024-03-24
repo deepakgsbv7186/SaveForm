@@ -4,6 +4,7 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import axios from "axios";
 import toast from "react-hot-toast";
+import { ENDPOINT } from "../../endpoints";
 
 const validationSchema = Yup.object().shape({
   name: Yup.string()
@@ -43,19 +44,15 @@ export default function Register() {
       confirmpassword: "",
     },
     validationSchema: validationSchema,
-    onSubmit: (values) => handleFormSubmit(values),
+    onSubmit: () => handleFormSubmit(),
   });
 
-  const handleFormSubmit = async (values) => {
+  const handleFormSubmit = async () => {
     try {
-      const response = await axios({
-        method: "POST",
-        url: "http://localhost:4004/api/auth/register",
-        data: {
-          name: values.name,
-          email: values.email,
-          password: values.confirmpassword,
-        },
+      const response = await axios.post(ENDPOINT.register, {
+        name: values.name,
+        email: values.email,
+        password: values.confirmpassword,
       });
 
       if (response?.status === 201) {

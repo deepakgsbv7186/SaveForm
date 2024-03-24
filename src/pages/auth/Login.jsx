@@ -4,6 +4,9 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import axios from "axios";
 import toast from "react-hot-toast";
+import { ENDPOINT } from "../../endpoints";
+import { useContext } from "react";
+import { AuthContext } from "../../context/AuthContext";
 
 const validationSchema = Yup.object().shape({
   email: Yup.string().email("Invalid email").required("Email is required."),
@@ -19,6 +22,7 @@ const validationSchema = Yup.object().shape({
 
 export default function Login() {
   const navigate = useNavigate();
+  const { setUserData } = useContext(AuthContext);
   const {
     values,
     errors,
@@ -38,15 +42,13 @@ export default function Login() {
 
   const handleFormSubmit = async () => {
     try {
-      const response = await axios.post(
-        "http://localhost:4004/api/auth/login",
-        {
-          email: values.email,
-          password: values.password,
-        }
-      );
-
+      const response = await axios.post(ENDPOINT.login, {
+        email: values.email,
+        password: values.password,
+      });
+      console.log(response);
       if (response?.status === 200) {
+        setUserData(response?.data?.user);
         console.log("Logged in: ", response?.data);
         toast.success("Login successful");
         resetForm();
