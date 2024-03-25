@@ -5,7 +5,7 @@ import * as Yup from "yup";
 import axios from "axios";
 import toast from "react-hot-toast";
 import { ENDPOINT } from "../../endpoints";
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { AuthContext } from "../../context/AuthContext";
 
 const validationSchema = Yup.object().shape({
@@ -22,7 +22,7 @@ const validationSchema = Yup.object().shape({
 
 export default function Login() {
   const navigate = useNavigate();
-  const { setUserData } = useContext(AuthContext);
+  const { userData, setUserData } = useContext(AuthContext);
   const {
     values,
     errors,
@@ -47,7 +47,9 @@ export default function Login() {
         password: values.password,
       });
       if (response?.status === 200) {
-        setUserData(response?.data?.user);
+        const { user } = response?.data;
+        setUserData(user);
+        localStorage.setItem("authToken", user?.token);
         toast.success("Login successful");
         resetForm();
         navigate("/dashboard");
@@ -57,6 +59,12 @@ export default function Login() {
       console.log("Login failed due to: ", error);
     }
   };
+
+  useEffect(() => {
+    if (userData?.token) {
+      navigate("/dashboard", { replace: true });
+    }
+  }, [userData, navigate]);
   return (
     <div className="flex justify-center items-center h-screen">
       <div className="p-4 bg-slate-700 rounded-md shadow-md lg:w-3/12 md:w-6/12 w-[90%]">

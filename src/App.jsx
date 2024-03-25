@@ -5,12 +5,10 @@ import Dashboard from "./pages/dashboard";
 import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
 import Error from "./pages/auth/Error";
-import { useContext } from "react";
-import { AuthContext } from "./context/AuthContext";
 
 const ProtectedRoutes = () => {
-  const { userData } = useContext(AuthContext);
-  return userData?.token ? <Layout /> : <Navigate to="/login" replace />;
+  const authToken = localStorage.getItem("authToken");
+  return authToken ? <Layout /> : <Navigate to="/login" replace />;
 };
 
 export default function App() {

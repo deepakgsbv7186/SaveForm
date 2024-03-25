@@ -19,8 +19,9 @@ export default function () {
       });
 
       if (response?.status === 200) {
-        toast.success("Logout successful");
         setUserData(null);
+        localStorage.removeItem("authToken");
+        toast.success("Logout successful");
         navigate("/login");
       }
     } catch (error) {
